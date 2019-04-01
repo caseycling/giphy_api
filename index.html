@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Giphy API</title>
+</head>
+
+<body>
+ 
+    <form>
+      <br>
+        Add an artist:<br>
+        <input type="text" name="artistSearch" class="submitForm">
+        <br>
+        <input type="submit" name="submit" class="submitForm">
+      </form>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+  //  1. Before you can make any part of our site work, you need to create an array of strings, each one related to a topic that interests you. Save it to a variable called `topics`.
+  //  We chose animals for our theme, but you can make a list to your own liking.
+  var vegetables = ["potato", "cucumber", "carrot", "spinach", "kale", "eggplant", "celery", "broccoli"]
+
+  // 2. Your app should take the topics in this array and create buttons in your HTML.
+  //   * Try using a loop that appends a button for each string in the array.
+  function createBtns() {
+    for(let i=0; i<vegetables.length; i++) {
+        $("body").prepend("<button value=" + vegetables[i] + ">" + vegetables[i] + "</button> ").val(vegetables[i])
+    }
+  }
+
+  createBtns();
+
+  // 3. When the user clicks on a button, the page should grab 10 static, non-animated gif images from the GIPHY API and place them on the page.
+  //    *When the button is clicked, get the value and plug it into the search term
+
+  var btnOutput;
+
+ $("button").click(function() {
+
+    btnOutput = $(this).val()
+    console.log(btnOutput)
+    var searchTerm = btnOutput;
+    var limit = 10;
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + searchTerm + "&limit=" + limit + "&api_key=dc6zaTOxFJmzC";
+    
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).then(function(response) {
+
+      console.log(response)
+      for(var i = 0; i<vegetables.length; i++){
+      var gif = $("<img/>").attr("src", response.data[i].url)
+      $("body").append(gif)
+      }
+    });
+  })
+
+
+  // 4. When the user clicks one of the still GIPHY images, the gif should animate. If the user clicks the gif again, it should stop playing.
+  
+  // 5. Under every gif, display its rating (PG, G, so on).
+  //     * This data is provided by the GIPHY API.
+  //     * Only once you get images displaying with button presses should you move on to the next step.
+  
+  // 6. Add a form to your page takes the value from a user input box and adds it into your `topics` array. Then make a function call that takes each topic in the array remakes the buttons on the page.
+  
+  // 7. Deploy your assignment to Github Pages.
+
+  // Example queryURL for Giphy API
+  
+
+</script>
+
+
+</html>
