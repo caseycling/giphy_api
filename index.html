@@ -7,71 +7,107 @@
 </head>
 
 <body>
- 
-    <form>
-      <br>
-        Add an artist:<br>
-        <input type="text" name="artistSearch" class="submitForm">
-        <br>
-        <input type="submit" name="submit" class="submitForm">
-      </form>
+  <form>
+    <br>
+    Add an artist:<br>
+    <input type="text" name="artistSearch" class="submitForm">
+    <br>
+    <input type="submit" name="submit" class="submitBtn">
+  </form>
+  <div id="gifContainer" style="display: flex" style="flex-wrap: wrap">
+    <div id="gifColumn" style="flex: 10%"></div>
+  </div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript">
+
   //  1. Before you can make any part of our site work, you need to create an array of strings, each one related to a topic that interests you. Save it to a variable called `topics`.
   //  We chose animals for our theme, but you can make a list to your own liking.
-  var vegetables = ["potato", "cucumber", "carrot", "spinach", "kale", "eggplant", "celery", "broccoli"]
+  var musicians = ["Tupac", "Rage Against The Machine", "Notorious BIG"]
 
   // 2. Your app should take the topics in this array and create buttons in your HTML.
   //   * Try using a loop that appends a button for each string in the array.
+
   function createBtns() {
-    for(let i=0; i<vegetables.length; i++) {
-        $("body").prepend("<button value=" + vegetables[i] + ">" + vegetables[i] + "</button> ").val(vegetables[i])
+    for (let i = 0; i < musicians.length; i++) {
+      var a = $("<button>" + musicians[i] + "</button> ").attr("data-name", musicians[i])
+      $("body").prepend(a)
     }
   }
 
   createBtns();
 
+  //On clicking the submit button,
+  $(document).on("click", ".submitBtn", function () {
+    event.preventDefault();
+    //save the value of the text input in the submit form and prepend it as a button in the body
+    var newBtn = $(".submitForm").val();
+    newBtn = $("<button>" + newBtn + "</button> ").attr("data-name", newBtn)
+    $("body").prepend(newBtn)
+    musicians.push($(".submitForm").val())
+    console.log($(".submitForm").val())
+    console.log(musicians)
+  })
+
+  console.log(musicians)
   // 3. When the user clicks on a button, the page should grab 10 static, non-animated gif images from the GIPHY API and place them on the page.
   //    *When the button is clicked, get the value and plug it into the search term
 
   var btnOutput;
 
- $("button").click(function() {
-
-    btnOutput = $(this).val()
-    console.log(btnOutput)
+  $(document).on("click", "button", function () {
+    //Create a variable btnOutput which gets the value of the button clicked
+    btnOutput = $(this).attr("data-name")
+    //Make the searchTerm get btnOutput 
     var searchTerm = btnOutput;
+    //Set a limit for gifs back 
     var limit = 10;
+    //Plug in the search term and limit to the URL for the API call
     var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + searchTerm + "&limit=" + limit + "&api_key=dc6zaTOxFJmzC";
-    
     $.ajax({
       url: queryURL,
       method: "GET"
-    }).then(function(response) {
-
-      console.log(response)
-      for(var i = 0; i<vegetables.length; i++){
-      var gif = $("<img/>").attr("src", response.data[i].url)
-      $("body").append(gif)
+    }).then(function (response) {
+      //Create a for loop that will go through the response and give you back as many gifs as are in the limit variable
+      for (var i = 0; i < limit; i++) {
+        //Give the gif's a class name of "gif"
+        var gif = $("<img> ").attr("src", response.data[i].images.fixed_height.url).addClass("gif")//.html(response.data[i].rating)
+        //Give then an attribute of data-still and data-animate
+        $(gif).attr("data-still", response.data[i].images.fixed_height_still.url).attr("data-animate", response.data[i].images.fixed_height.url)
+        $(gif).attr("data-state", "animate")
+        var rating = $("<h1>").html("The rating is: " + response.data[i].rating)
+        //Add them to the gif container
+        $("#gifColumn").prepend(rating)
+        $("#gifColumn").prepend(gif)
       }
     });
   })
 
-
   // 4. When the user clicks one of the still GIPHY images, the gif should animate. If the user clicks the gif again, it should stop playing.
-  
+  //Create event handler that evaluates when clicking a gif
+  $(document).on("click", ".gif", (function () {
+    //Set a variable state to get the attribute of the current data state of the gif (default is animate)
+    var state = $(this).attr("data-state")
+    //If the data state is at animate on click, change the source to the still url and change the data-state to "still"
+    if (state === "animate") {
+      $(this).attr("src", $(this).attr("data-still"))
+      $(this).attr("data-state", "still")
+      //Otherwise, set the source to the data-animate url and change the data-state to "animate"
+    } else {
+      $(this).attr("src", $(this).attr("data-animate"))
+      $(this).attr("data-state", "animate")
+    }
+  })
+  )
+
   // 5. Under every gif, display its rating (PG, G, so on).
   //     * This data is provided by the GIPHY API.
   //     * Only once you get images displaying with button presses should you move on to the next step.
-  
-  // 6. Add a form to your page takes the value from a user input box and adds it into your `topics` array. Then make a function call that takes each topic in the array remakes the buttons on the page.
-  
-  // 7. Deploy your assignment to Github Pages.
 
-  // Example queryURL for Giphy API
-  
+
+  // 6. Add a form to your page takes the value from a user input box and adds it into your `topics` array. 
+  //    Then make a function call that takes each topic in the array remakes the buttons on the page.
 
 </script>
 
